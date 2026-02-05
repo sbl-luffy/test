@@ -35,6 +35,11 @@ spec:
       nodePort: 31000  # or any other available port
   type: NodePort
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kafka
+---
 # 1. Manually define the storage on your Linux disk
 apiVersion: v1
 kind: PersistentVolume
@@ -55,7 +60,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zookeeper-service
-  namespace: microservices
+  namespace: kafka
 spec:
   ports:
   - port: 2181
@@ -66,7 +71,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: zookeeper
-  namespace: microservices
+  namespace: kafka
 spec:
   replicas: 1
   selector:
@@ -88,7 +93,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kafka-service
-  namespace: microservices
+  namespace: kafka
 spec:
   clusterIP: None
   ports:
@@ -101,7 +106,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: kafka
-  namespace: microservices
+  namespace: kafka
 spec:
   serviceName: "kafka-service"
   replicas: 1
@@ -138,6 +143,9 @@ spec:
       storageClassName: local-storage
       accessModes: [ "ReadWriteOnce" ]
       resources:
+        requests:
+          storage: 5Gi
+ 
         requests:
           storage: 5Gi
   
